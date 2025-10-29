@@ -1,307 +1,259 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Compte à rebours</title>
-
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-
-/* 🌗 Mode clair par défaut */
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background:#f5f5f5;
-    display:flex;justify-content:center;align-items:center;
-    min-height:100vh;padding:20px;
-    transition:background .5s;
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;
+  background:#fff;color:#111;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;
+  transition:background .3s,color .3s;
 }
 
-.timer-container {
-    background:white;
-    border-radius:16px;
-    padding:20px 25px;
-    border:4px solid transparent;
-    display:flex;align-items:center;flex-wrap:wrap;
-    gap:15px;max-width:900px;width:100%;
-    transition:border .3s;
+/* --- conteneur principal --- */
+.timer-container{
+  position:relative;width:300px;height:300px;
+  display:flex;align-items:center;justify-content:center;
 }
 
-/* 🌈 Animation Néon */
-@keyframes neon-spin {
-    0% { border-color:#ff0000; box-shadow:0 0 12px #ff0000; }
-    16% { border-color:#ff7f00; box-shadow:0 0 12px #ff7f00; }
-    33% { border-color:#ffff00; box-shadow:0 0 12px #ffff00; }
-    50% { border-color:#00ff00; box-shadow:0 0 12px #00ff00; }
-    66% { border-color:#0000ff; box-shadow:0 0 12px #0000ff; }
-    83% { border-color:#8b00ff; box-shadow:0 0 12px #8b00ff; }
-    100% { border-color:#ff0000; box-shadow:0 0 12px #ff0000; }
+/* --- Cercle de progression --- */
+.progress-ring{
+  position:absolute;inset:0;
+  transform:rotate(-90deg);
+  width:100%;height:100%;
 }
-.neon-effect {
-    animation: neon-spin 1s linear infinite;
+.progress-ring__bg{
+  fill:none;stroke:#eee;stroke-width:8;
 }
-
-.time-group{display:flex;align-items:center;gap:6px;}
-.adjust-btn {
-    width:32px;height:32px;
-    border-radius:6px;border:1px solid #e0e0e0;
-    background:white;color:#333;font-size:16px;
-    cursor:pointer;font-weight:600;transition:.2s;
-}
-.adjust-btn:hover:not(:disabled){background:#eee;}
-.adjust-btn:disabled{opacity:.3}
-
-.time-value {
-    font-size:36px;font-weight:600;
-    color:#333;min-width:65px;text-align:center;
+.progress-ring__circle{
+  fill:none;stroke:#007aff;stroke-width:8;stroke-linecap:round;
+  transition:stroke-dashoffset 1s linear;
 }
 
-.separator {font-size:36px;color:#ccc;}
-
-.controls {
-    display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+/* --- Animation arc-en-ciel tournante à la fin --- */
+@keyframes rainbow-rotate {
+  0% { stroke: url(#grad1); transform: rotate(0deg); }
+  100% { stroke: url(#grad1); transform: rotate(360deg); }
+}
+.rainbow-animate {
+  animation: rainbow-rotate 2s linear infinite;
+  transform-origin: 50% 50%;
 }
 
-.btn {
-    padding:10px 20px;border-radius:8px;
-    border:1px solid #e0e0e0;background:white;
-    cursor:pointer;font-weight:500;color:#333;
-    transition:.2s;
+/* --- affichage du temps --- */
+.time-wrapper{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;z-index:2;
 }
-.btn:hover:not(:disabled){background:#eee;}
-.btn:disabled{opacity:.4}
-
-.btn-primary {
-    background:#333;color:white;border-color:#333;
+.time-group{
+  display:flex;flex-direction:column;align-items:center;min-width:60px;
 }
-.btn-primary:hover:not(:disabled){background:#555;}
-
-.bell-btn {
-    background:none;border:none;font-size:22px;
-    cursor:pointer;color:#333;
+.btn-up,.btn-down{
+  width:34px;height:34px;border:none;border-radius:10px;
+  background:#f1f1f1;cursor:pointer;font-size:18px;font-weight:600;
+  transition:all .15s ease;
 }
-
-/* 🔊 Popin */
-.modal-overlay {
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,0.4);
-    display:none;justify-content:center;align-items:center;
+.btn-up:hover,.btn-down:hover{background:#e0e0e0}
+.time-value{
+  font-size:34px;font-weight:700;text-align:center;width:55px;color:#111;
 }
-.modal {
-    background:white;padding:20px 25px;border-radius:10px;
-    display:flex;flex-direction:column;gap:12px;
-    animation:fadeIn .2s ease;
+.separator{font-size:30px;color:#888;font-weight:600;}
+
+/* --- Contrôles sous le cercle --- */
+.controls{
+  margin-top:25px;
+  display:flex;gap:20px;align-items:center;justify-content:center;
 }
-@keyframes fadeIn {from{opacity:0;transform:scale(.95);}to{opacity:1;}}
-
-.close-btn{align-self:flex-end;border:none;background:none;font-size:20px;cursor:pointer;}
-
-.modal select {
-    padding:8px;border-radius:6px;
-    border:1px solid #e0e0e0;background:white;color:#333;
+.icon-btn{
+  width:50px;height:50px;border:none;border-radius:14px;
+  background:#f1f1f1;color:#111;cursor:pointer;
+  font-size:22px;display:flex;align-items:center;justify-content:center;
+  transition:all .15s ease;
 }
+.icon-btn:hover{background:#e0e0e0;transform:translateY(-2px);}
+.icon-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
 
-/* 📱 Responsive */
-@media(max-width:720px){
-    .timer-container{flex-direction:column;}
-    .time-value{font-size:30px;}
-}
-
-/* 🌙 DARK MODE AUTOMATIQUE */
-@media(prefers-color-scheme: dark){
-    body {background:#1a1a1a;}
-    .timer-container{background:#222;border-color:transparent;}
-    .time-value{color:white;}
-    .adjust-btn{background:#333;border-color:#555;color:white;}
-    .adjust-btn:hover{background:#444;}
-    .separator{color:#555;}
-    .btn{background:#333;color:white;border-color:#555;}
-    .btn:hover{background:#444;border-color:#777;}
-    .bell-btn{color:white;}
-    .modal{background:#222;color:white;}
-    .modal select{background:#333;color:white;border-color:#555;}
-    .close-btn{color:white;}
+/* --- Dark mode --- */
+@media(prefers-color-scheme:dark){
+  body{background:#111;color:#eee}
+  .progress-ring__bg{stroke:#333}
+  .progress-ring__circle{stroke:#0a84ff}
+  .btn-up,.btn-down,.icon-btn{background:#222;color:#eee}
+  .btn-up:hover,.btn-down:hover,.icon-btn:hover{background:#333}
+  .time-value{color:#fff}
 }
 </style>
 </head>
-
 <body>
-<div class="timer-container" id="timerBox">
 
+<div class="timer-container">
+  <svg class="progress-ring" viewBox="0 0 300 300">
+    <!-- Dégradé arc-en-ciel -->
+    <defs>
+      <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#ff0000"/>
+        <stop offset="16%" stop-color="#ff7f00"/>
+        <stop offset="33%" stop-color="#ffff00"/>
+        <stop offset="50%" stop-color="#00ff00"/>
+        <stop offset="66%" stop-color="#0000ff"/>
+        <stop offset="83%" stop-color="#8b00ff"/>
+        <stop offset="100%" stop-color="#ff0000"/>
+      </linearGradient>
+    </defs>
+
+    <circle class="progress-ring__bg" cx="150" cy="150" r="130"></circle>
+    <circle class="progress-ring__circle" id="ring" cx="150" cy="150" r="130"></circle>
+  </svg>
+
+  <div class="time-wrapper">
     <div class="time-group">
-        <button class="adjust-btn" onclick="adjustTime('hours', -1)" id="hoursDown">−</button>
-        <div class="time-value" id="hours">00</div>
-        <button class="adjust-btn" onclick="adjustTime('hours', 1)" id="hoursUp">+</button>
+      <button class="btn-up" id="hoursUp">+</button>
+      <div class="time-value" id="hours">00</div>
+      <button class="btn-down" id="hoursDown">−</button>
     </div>
-
     <div class="separator">:</div>
-
     <div class="time-group">
-        <button class="adjust-btn" onclick="adjustTime('minutes', -1)" id="minutesDown">−</button>
-        <div class="time-value" id="minutes">00</div>
-        <button class="adjust-btn" onclick="adjustTime('minutes', 1)" id="minutesUp">+</button>
+      <button class="btn-up" id="minutesUp">+</button>
+      <div class="time-value" id="minutes">00</div>
+      <button class="btn-down" id="minutesDown">−</button>
     </div>
-
     <div class="separator">:</div>
-
     <div class="time-group">
-        <button class="adjust-btn" onclick="adjustTime('seconds', -1)" id="secondsDown">−</button>
-        <div class="time-value" id="seconds">00</div>
-        <button class="adjust-btn" onclick="adjustTime('seconds', 1)" id="secondsUp">+</button>
+      <button class="btn-up" id="secondsUp">+</button>
+      <div class="time-value" id="seconds">00</div>
+      <button class="btn-down" id="secondsDown">−</button>
     </div>
-
-    <div class="controls">
-        <button class="btn btn-primary" id="startBtn" onclick="startTimer()">Start</button>
-        <button class="btn" id="pauseBtn" onclick="pauseTimer()" disabled>Pause</button>
-        <button class="btn" onclick="resetTimer()">Reset</button>
-        <button class="bell-btn" onclick="openModal()">🔔</button>
-    </div>
-
+  </div>
 </div>
 
-<!-- Popin -->
-<div class="modal-overlay" id="modal">
-    <div class="modal">
-        <button class="close-btn" onclick="closeModal()">✕</button>
-        <label for="soundSelect">Son :</label>
-        <select id="soundSelect">
-            <option value="beep">Bip classique</option>
-            <option value="bell">Cloche</option>
-            <option value="chime">Carillon</option>
-            <option value="alert">Alerte</option>
-            <option value="ping">Ping</option>
-        </select>
-        <button class="btn" onclick="testSound()">Tester</button>
-    </div>
+<!-- Contrôles -->
+<div class="controls">
+  <button class="icon-btn" id="startBtn" title="Démarrer">▶</button>
+  <button class="icon-btn" id="pauseBtn" title="Pause" disabled>❚❚</button>
+  <button class="icon-btn" id="resetBtn" title="Réinitialiser">↻</button>
 </div>
 
 <script>
-let totalSeconds=0, remainingSeconds=0;
-let isRunning=false, timerInterval=null;
-const STORAGE_KEY="timerState_v4";
+const hoursEl=document.getElementById("hours"),
+      minutesEl=document.getElementById("minutes"),
+      secondsEl=document.getElementById("seconds"),
+      ring=document.getElementById("ring");
 
-/* 🔒 Sauvegarde */
-function persistState(){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        remainingSeconds, sound:soundSelect.value
-    }));
-}
+const RADIUS=130;
+const CIRC=2*Math.PI*RADIUS;
+ring.style.strokeDasharray=CIRC;
+ring.style.strokeDashoffset=0; // pleine au départ
 
-/* ♻️ Restauration */
-function loadState(){
-    const saved=localStorage.getItem(STORAGE_KEY);
-    if(!saved)return;
-    const s=JSON.parse(saved);
-    if(s.remainingSeconds>=0){
-        remainingSeconds=s.remainingSeconds;
-        totalSeconds=s.remainingSeconds;
-    }
-    if(s.sound) soundSelect.value=s.sound;
-}
+let totalSeconds=0,remainingSeconds=0,isRunning=false,timerInterval=null;
 
-/* 🕒 Mise à jour */
+/* --- MAJ affichage --- */
 function updateDisplay(){
-    const h=Math.floor(remainingSeconds/3600);
-    const m=Math.floor((remainingSeconds%3600)/60);
-    const s=remainingSeconds%60;
-
-    hours.textContent=String(h).padStart(2,'0');
-    minutes.textContent=String(m).padStart(2,'0');
-    seconds.textContent=String(s).padStart(2,'0');
-
-    if(remainingSeconds===0 && isRunning){
-        pauseTimer();
-        playSound(soundSelect.value);
-        triggerNeon();
-        resetTimer();
-    }
-}
-
-/* 🔧 Ajustement temps */
-function adjustTime(unit,d){
-    if(isRunning)return;
-    let h=Math.floor(remainingSeconds/3600),
+  const h=Math.floor(remainingSeconds/3600),
         m=Math.floor((remainingSeconds%3600)/60),
         s=remainingSeconds%60;
-
-    if(unit==='hours')h=Math.max(0,Math.min(99,h+d));
-    if(unit==='minutes'){m+=d;if(m>=60){m=0;h++;}else if(m<0){m=59;h--;}}
-    if(unit==='seconds'){s+=d;if(s>=60){s=0;m++;}else if(s<0){s=59;m--;}}
-
-    remainingSeconds=Math.max(0,h*3600+m*60+s);
-    totalSeconds=remainingSeconds;
-    updateDisplay();persistState();
-}
-
-/* ▶️ Démarrer */
-function startTimer(){
-    if(remainingSeconds===0)return;
-    isRunning=true;
-    startBtn.disabled=true;pauseBtn.disabled=false;
-    timerInterval=setInterval(()=>{
-        if(remainingSeconds>0){
-            remainingSeconds--;updateDisplay();
-        }
-        persistState();
-    },1000);
-}
-
-/* ⏸ Pause */
-function pauseTimer(){
-    isRunning=false;
-    clearInterval(timerInterval);
-    startBtn.disabled=false;pauseBtn.disabled=true;
-    persistState();
-}
-
-/* 🔄 Reset */
-function resetTimer(){
+  hoursEl.textContent=String(h).padStart(2,"0");
+  minutesEl.textContent=String(m).padStart(2,"0");
+  secondsEl.textContent=String(s).padStart(2,"0");
+  updateRing();
+  if(remainingSeconds===0 && isRunning){
     pauseTimer();
-    remainingSeconds=totalSeconds;
-    updateDisplay();
-    persistState();
+    playBell();
+    rainbowEffect();
+    resetTimer();
+  }
 }
 
-/* 🔊 Sons (5s) */
-function playSound(type){
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const dur=5;
-    function tone(freq,shape='sine',delay=0){
-        const osc=ctx.createOscillator(),gain=ctx.createGain();
-        osc.type=shape;osc.frequency.value=freq;
-        osc.connect(gain);gain.connect(ctx.destination);
-        gain.gain.setValueAtTime(.3,ctx.currentTime+delay);
-        gain.gain.exponentialRampToValueAtTime(.01,ctx.currentTime+delay+dur);
-        osc.start(ctx.currentTime+delay);
-        osc.stop(ctx.currentTime+delay+dur);
-    }
-    switch(type){
-        case 'beep': tone(800); break;
-        case 'bell': tone(523); tone(659,'sine',1.2); break;
-        case 'chime': tone(523); tone(659,'sine',1.2); tone(784,'sine',2.4); break;
-        case 'alert': tone(880,'square'); tone(880,'square',1.5); tone(880,'square',3); break;
-        case 'ping': tone(1200); break;
-    }
+/* --- cercle de progression --- */
+function updateRing(){
+  if(totalSeconds<=0){ring.style.strokeDashoffset=0;return;}
+  const progress=remainingSeconds/totalSeconds;
+  ring.style.strokeDashoffset=CIRC*(1-progress);
 }
 
-function testSound(){ playSound(soundSelect.value); }
-
-/* 🌈 Néon */
-function triggerNeon(){
-    const box=document.getElementById('timerBox');
-    box.classList.add('neon-effect');
-    setTimeout(()=>box.classList.remove('neon-effect'),6000);
+/* --- réglage temps --- */
+function adjustTime(unit,delta){
+  if(isRunning)return;
+  let h=Math.floor(remainingSeconds/3600),
+      m=Math.floor((remainingSeconds%3600)/60),
+      s=remainingSeconds%60;
+  if(unit==="hours")h=Math.max(0,Math.min(99,h+delta));
+  if(unit==="minutes"){m+=delta;if(m>=60){m=0;h++;}else if(m<0){m=59;h--;}}
+  if(unit==="seconds"){s+=delta;if(s>=60){s=0;m++;}else if(s<0){s=59;m--;}}
+  remainingSeconds=Math.max(0,h*3600+m*60+s);
+  totalSeconds=remainingSeconds;
+  updateDisplay();
 }
 
-/* 🔔 Popin */
-function openModal(){modal.style.display="flex";}
-function closeModal(){modal.style.display="none";}
-modal.onclick=e=>{if(e.target===modal)closeModal();}
+/* --- boutons + - --- */
+document.getElementById("hoursUp").onclick=()=>adjustTime("hours",1);
+document.getElementById("hoursDown").onclick=()=>adjustTime("hours",-1);
+document.getElementById("minutesUp").onclick=()=>adjustTime("minutes",1);
+document.getElementById("minutesDown").onclick=()=>adjustTime("minutes",-1);
+document.getElementById("secondsUp").onclick=()=>adjustTime("seconds",1);
+document.getElementById("secondsDown").onclick=()=>adjustTime("seconds",-1);
 
-/* ✅ Init */
-loadState();
+/* --- boutons de contrôle --- */
+const startBtn=document.getElementById("startBtn"),
+      pauseBtn=document.getElementById("pauseBtn"),
+      resetBtn=document.getElementById("resetBtn");
+
+function startTimer(){
+  if(remainingSeconds<=0)return;
+  isRunning=true;
+  startBtn.disabled=true;pauseBtn.disabled=false;
+  ring.classList.remove("rainbow-animate");
+  timerInterval=setInterval(()=>{
+    if(remainingSeconds>0){remainingSeconds--;updateDisplay();}
+  },1000);
+}
+function pauseTimer(){
+  isRunning=false;
+  clearInterval(timerInterval);
+  startBtn.disabled=false;pauseBtn.disabled=true;
+}
+function resetTimer(){
+  pauseTimer();
+  remainingSeconds=totalSeconds;
+  updateDisplay();
+}
+
+startBtn.onclick=startTimer;
+pauseBtn.onclick=pauseTimer;
+resetBtn.onclick=resetTimer;
+
+/* --- son Cloche (5s) --- */
+function playBell(){
+  const ctx=new(window.AudioContext||window.webkitAudioContext)();
+  const dur=5;
+  function tone(f,delay=0){
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type="sine";o.frequency.value=f;o.connect(g);g.connect(ctx.destination);
+    const t=ctx.currentTime+delay;
+    g.gain.setValueAtTime(.3,t);
+    g.gain.exponentialRampToValueAtTime(.001,t+dur);
+    o.start(t);o.stop(t+dur);
+  }
+  tone(523);
+  tone(659,1.2);
+}
+
+/* --- Animation arc-en-ciel circulaire à la fin --- */
+function rainbowEffect(){
+  ring.classList.add("rainbow-animate");
+  ring.style.stroke="url(#grad1)";
+  setTimeout(()=>{
+    ring.classList.remove("rainbow-animate");
+    ring.style.stroke="#007aff";
+  },5000);
+}
+
+/* --- init --- */
 updateDisplay();
 </script>
-
 </body>
 </html>
