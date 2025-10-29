@@ -30,7 +30,7 @@ body{
   fill:none;stroke:#eee;stroke-width:2;
 }
 .progress-ring__circle{
-  fill:none;stroke:#007aff;stroke-width:4;stroke-linecap:round;
+  fill:none;stroke:#ac19bd;stroke-width:4;stroke-linecap:round;
   transition:stroke-dashoffset 1s linear;
 }
 
@@ -82,7 +82,7 @@ body{
 @media(prefers-color-scheme:dark){
   body{background:#191919;color:#eee}
   .progress-ring__bg{stroke:#333}
-  .progress-ring__circle{stroke:#0a84ff}
+  .progress-ring__circle{stroke:#ac19bd}
   .btn-up,.btn-down,.icon-btn{background:#222;color:#eee}
   .btn-up:hover,.btn-down:hover,.icon-btn:hover{background:#333}
   .time-value{color:#fff}
@@ -269,7 +269,7 @@ function rainbowEffect(){
   ring.style.stroke="url(#grad1)";
   setTimeout(()=>{
     ring.classList.remove("rainbow-animate");
-    ring.style.stroke="#007aff";
+    ring.style.stroke="#ac19bd";
   },10000);
 }
 
