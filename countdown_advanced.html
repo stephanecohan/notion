@@ -27,10 +27,10 @@ body{
   width:100%;height:100%;
 }
 .progress-ring__bg{
-  fill:none;stroke:#eee;stroke-width:8;
+  fill:none;stroke:#eee;stroke-width:2;
 }
 .progress-ring__circle{
-  fill:none;stroke:#007aff;stroke-width:8;stroke-linecap:round;
+  fill:none;stroke:#007aff;stroke-width:4;stroke-linecap:round;
   transition:stroke-dashoffset 1s linear;
 }
 
@@ -48,25 +48,25 @@ body{
 .time-wrapper{
   position:relative;
   display:flex;align-items:center;justify-content:center;
-  gap:8px;z-index:2;
+  gap:0px;z-index:2;
 }
 .time-group{
   display:flex;flex-direction:column;align-items:center;min-width:60px;
 }
 .btn-up,.btn-down{
   width:34px;height:34px;border:none;border-radius:10px;
-  background:#f1f1f1;cursor:pointer;font-size:18px;font-weight:600;
+  background:#f1f1f1;cursor:pointer;font-size:18px;font-weight:400;
   transition:all .15s ease;
 }
 .btn-up:hover,.btn-down:hover{background:#e0e0e0}
 .time-value{
-  font-size:34px;font-weight:700;text-align:center;width:55px;color:#111;
+  font-size:38px;font-weight:600;text-align:center;width:55px;color:#111;
 }
 .separator{font-size:30px;color:#888;font-weight:600;}
 
 /* --- Contrôles sous le cercle --- */
 .controls{
-  margin-top:25px;
+  margin-top:24px;
   display:flex;gap:20px;align-items:center;justify-content:center;
 }
 .icon-btn{
@@ -75,8 +75,8 @@ body{
   font-size:22px;display:flex;align-items:center;justify-content:center;
   transition:all .15s ease;
 }
-.icon-btn:hover{background:#e0e0e0;transform:translateY(-2px);}
-.icon-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.icon-btn:hover{background:#e0e0e0;transform:translateY(0px);}
+.icon-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;}
 
 /* --- Dark mode --- */
 @media(prefers-color-scheme:dark){
@@ -133,9 +133,24 @@ body{
 
 <!-- Contrôles -->
 <div class="controls">
-  <button class="icon-btn" id="startBtn" title="Démarrer">▶</button>
-  <button class="icon-btn" id="pauseBtn" title="Pause" disabled>❚❚</button>
-  <button class="icon-btn" id="resetBtn" title="Réinitialiser">↻</button>
+  <button class="icon-btn" id="startBtn" title="Démarrer">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+    </svg>
+  </button>
+  <button class="icon-btn" id="pauseBtn" title="Pause" disabled>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="6" y="4" width="4" height="16"></rect>
+      <rect x="14" y="4" width="4" height="16"></rect>
+    </svg>
+  </button>
+  <button class="icon-btn" id="resetBtn" title="Réinitialiser">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="23 4 23 10 17 10"></polyline>
+      <polyline points="1 20 1 14 7 14"></polyline>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+    </svg>
+  </button>
 </div>
 
 <script>
@@ -226,20 +241,26 @@ startBtn.onclick=startTimer;
 pauseBtn.onclick=pauseTimer;
 resetBtn.onclick=resetTimer;
 
-/* --- son Cloche (5s) --- */
+// 7. SONNETTE JOUET - Fun et léger
 function playBell(){
   const ctx=new(window.AudioContext||window.webkitAudioContext)();
-  const dur=5;
-  function tone(f,delay=0){
+  const dur=2;
+  function tone(f,delay=0,vol=0.25){
     const o=ctx.createOscillator(),g=ctx.createGain();
-    o.type="sine";o.frequency.value=f;o.connect(g);g.connect(ctx.destination);
+    o.type="triangle";
+    o.frequency.value=f;o.connect(g);g.connect(ctx.destination);
     const t=ctx.currentTime+delay;
-    g.gain.setValueAtTime(.3,t);
+    g.gain.setValueAtTime(vol,t);
     g.gain.exponentialRampToValueAtTime(.001,t+dur);
     o.start(t);o.stop(t+dur);
   }
-  tone(523);
-  tone(659,1.2);
+  tone(1047, 0);
+  tone(1319, 0.15);
+  tone(1568, 0.3);
+  tone(2093, 0.45);
+  tone(1568, 0.7);
+  tone(1319, 0.85);
+  tone(1047, 1.0);
 }
 
 /* --- Animation arc-en-ciel circulaire à la fin --- */
@@ -249,7 +270,7 @@ function rainbowEffect(){
   setTimeout(()=>{
     ring.classList.remove("rainbow-animate");
     ring.style.stroke="#007aff";
-  },5000);
+  },10000);
 }
 
 /* --- init --- */
