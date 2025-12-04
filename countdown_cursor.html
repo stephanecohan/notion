@@ -6,13 +6,13 @@
     <title>Timer circulaire</title>
     <style>
       :root {
-        --bg: #0d0d15;
-        --panel: #1f1f2b;
+        --bg: #191919;
+        --panel: transparent;
         --accent: #ac19bd;
         --muted: #777;
         --text: #f5f5fa;
         --rainbow-duration: 10s;
-        --ring-size: 360px;
+        --ring-size: 320px;
       }
       * {
         box-sizing: border-box;
@@ -22,28 +22,28 @@
         min-height: 100vh;
         font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
           sans-serif;
-        background: radial-gradient(circle at top, #1e1b3a, #0b0b12 70%);
+        background-color: var(--bg);
         color: var(--text);
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 24px;
+        padding: 12px;
       }
       .app-shell {
-        width: min(440px, 100%);
-        background: var(--panel);
-        border-radius: 28px;
-        padding: 28px 24px 36px;
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        width: min(420px, 100%);
+        background: transparent;
+        border-radius: 0;
+        padding: 8px 8px 12px;
+        box-shadow: none;
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 12px;
       }
       .timer-wrapper {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 18px;
+        gap: 10px;
       }
       .timer-shell {
         position: relative;
@@ -65,41 +65,39 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 32px 28px;
+        padding: 16px 12px;
         text-align: center;
       }
       .timer-overlay-inner {
-        width: 230px;
-        max-width: 80%;
+        width: 210px;
+        max-width: 78%;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 10px;
         margin: 0 auto;
       }
       .time-adjusters {
         width: 100%;
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
+        gap: 6px;
       }
       .unit {
         background: rgba(255, 255, 255, 0.06);
         border-radius: 14px;
-        padding: 8px;
+        padding: 6px;
       }
       .unit label {
         display: block;
-        font-size: 0.6rem;
-        letter-spacing: 0.01em;
+        font-size: 0.7rem;
+        letter-spacing: 0.02em;
         text-transform: uppercase;
-        /* color: rgba(255, 255, 255, 0.1); */
         padding-bottom: 8px;
       }
       .time-value {
         display: block;
         font-size: 1.8rem;
         font-weight: 600;
-        /* margin: 6px 0; */
         letter-spacing: 0.05em;
       }
       .adjust-btn {
@@ -108,8 +106,8 @@
         background: rgba(255, 255, 255, 0.08);
         color: var(--text);
         border-radius: 10px;
-        padding: 4px 0;
-        font-size: 1.1rem;
+        padding: 2px 0;
+        font-size: 1rem;
         cursor: pointer;
         transition: transform 0.2s ease, border-color 0.2s ease;
       }
@@ -169,11 +167,11 @@
       .controls {
         display: flex;
         justify-content: center;
-        gap: 16px;
+        gap: 10px;
       }
       .icon-btn {
-        width: 56px;
-        height: 56px;
+        width: 46px;
+        height: 46px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.08);
         border: 1px solid rgba(255, 255, 255, 0.12);
@@ -199,16 +197,16 @@
 
       @media (prefers-color-scheme: light) {
         :root {
-          --bg: #f3f4f8;
-          --panel: #ffffff;
+          --bg: #ffffff;
+          --panel: transparent;
           --text: #111827;
           --muted: #c4c4c4;
         }
         body {
-          background: radial-gradient(circle at top, #ffffff, #e5e7eb 70%);
+          background-color: var(--bg);
         }
         .app-shell {
-          box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+          box-shadow: none;
         }
         .unit {
           background: rgba(15, 23, 42, 0.03);
@@ -263,7 +261,7 @@
                     +
                   </button>
                   <span class="time-value" data-unit="hours">00</span>
-                  <label>Heures</label>
+                  <label>H</label>                  
                   <button class="adjust-btn" data-unit="hours" data-direction="dec">
                     -
                   </button>
@@ -277,7 +275,7 @@
                     +
                   </button>
                   <span class="time-value" data-unit="minutes">00</span>
-                  <label>Minutes</label>
+                  <label>Min</label>
                   <button
                     class="adjust-btn"
                     data-unit="minutes"
@@ -295,7 +293,7 @@
                     +
                   </button>
                   <span class="time-value" data-unit="seconds">00</span>
-                  <label>Secondes</label>
+                  <label>Sec</label>
                   <button
                     class="adjust-btn"
                     data-unit="seconds"
